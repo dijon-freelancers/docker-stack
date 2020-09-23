@@ -28,6 +28,19 @@ install:
 
 	@printf "${BLUE}Installing ${COMPOSE_PROJECT_NAME}${RESET}${LINE_RETURN}"
 
+	@printf "${GREEN}Generating secrets...${RESET}${LINE_BREAK}"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}"
+
+	@printf "Generating db_root_password..."
+	@openssl rand -base64 12 > ./docker.d/secrets/db_root_password
+	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_BREAK}"
+
+	@printf "Generating db_dba_password..."
+	@openssl rand -base64 12 > ./docker.d/secrets/db_dba_password
+	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_BREAK}"
+
+	@printf ${LINE_BREAK}
+
 	@${MAKE} --no-print-directory docker_launch
 
 	@printf "${LINE_BREAK}"

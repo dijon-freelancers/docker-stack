@@ -6,19 +6,27 @@ services:
         context: ../..
         dockerfile: ./docker.d/dockerfiles/mysql.Dockerfile
     container_name: $COMPOSE_PROJECT_NAME-mysql
+    restart: always
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4 
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - /opt/$COMPOSE_PROJECT_NAME/mysql/data:/var/lib/mysql
-    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: sqlPractice
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      MYSQL_USER: dba
+      MYSQL_PASSWORD_FILE: /run/secrets/db_dba_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    secrets:
+      - db_root_password
+      - db_dba_password
     ports:
       - '3306:3306'
     networks:
       - backend
+
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password
+  db_dba_password:
+    file: ../secrets/db_dba_password
