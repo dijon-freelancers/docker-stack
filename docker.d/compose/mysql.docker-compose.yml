@@ -14,8 +14,6 @@ services:
     volumes:
       - $PWD/run/mysql/data:/var/lib/mysql
     environment:
-      MYSQL_USER: dba
-      MYSQL_PASSWORD_FILE: /run/secrets/db_dba_password
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
     secrets:
       - db_root_password
@@ -28,5 +26,3 @@ services:
 secrets:
   db_root_password:
     file: ../secrets/mysql/db_root_password
-  db_dba_password:
-    file: ../secrets/mysql/db_dba_password
