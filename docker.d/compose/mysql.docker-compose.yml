@@ -12,7 +12,7 @@ services:
       - --character-set-server=utf8mb4 
       - --collation-server=utf8mb4_unicode_ci
     volumes:
-      - /opt/$COMPOSE_PROJECT_NAME/mysql/data:/var/lib/mysql
+      - $PWD/run/mysql/data:/var/lib/mysql
     environment:
       MYSQL_USER: dba
       MYSQL_PASSWORD_FILE: /run/secrets/db_dba_password
@@ -27,6 +27,6 @@ services:
 
 secrets:
   db_root_password:
-    file: ../secrets/db_root_password
+    file: ../secrets/mysql/db_root_password
   db_dba_password:
-    file: ../secrets/db_dba_password
+    file: ../secrets/mysql/db_dba_password
