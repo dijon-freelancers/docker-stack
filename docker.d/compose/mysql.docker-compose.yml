@@ -15,6 +15,7 @@ services:
     volumes:
       - $PWD/run/mysql/data:/var/lib/mysql
     environment:
+      TZ: $TIMEZONE
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
     secrets:
       - db_root_password

@@ -1,4 +1,8 @@
-## env files ##
+##> env files ##
 .env
 !env.d/.env
-## env files ##
+##< env files ##
+
+##> jetbrains ##
+.idea
+##< jetbrains ##
