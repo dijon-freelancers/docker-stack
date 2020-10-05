@@ -1,21 +1,19 @@
 version: '3.8'
 
 services:
-  php:
+  node:
     build:
       context: ../..
-      dockerfile: ./docker.d/dockerfiles/php.Dockerfile
+      dockerfile: ./docker.d/dockerfiles/node.Dockerfile
       args:
         PROJECT_SOURCE_DIR: /var/www/project
-    container_name: $COMPOSE_PROJECT_NAME-php
+    container_name: $COMPOSE_PROJECT_NAME-node
     restart: always
-    environment:
-      - TZ=Europe/Paris
-      - PROJECT_SOURCE_DIR=/var/www/project
     volumes:
       - $SOURCE_PATH:/var/www/project
+    command: ["yarn", "dev-server", "--host=0.0.0.0"]
     networks:
       - backend
       - public-net
     depends_on:
-      - mysql
+      - php
