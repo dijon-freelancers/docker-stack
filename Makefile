@@ -89,3 +89,31 @@ mysql_create_app_user: ## creates an applicative user
 	@printf "${ROCKET_SIGN} ${GREEN}Your user $$APP_USER_NAME has been created${RESET} ${ROCKET_SIGN}${LINE_BREAK}"
 	@printf "Username: $$APP_USER_NAME${LINE_BREAK}"
 	@printf "Password: $$(cat ./docker.d/secrets/mysql/db_$${APP_USER_NAME}_password)${LINE_RETURN}"
+
+.ONESHELL:
+create_proxy_credentials: ## creates the Traefik proxy credentials to put in the .env file
+	@printf "${GREEN}Proxy credentials creation...${RESET}\n"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
+
+	@PROXY_USERNAME=""
+	@PROXY_PASSWD=""
+	@DASHBOARD_AUTH=""
+
+	@read -p "${YELLOW}Username for proxy: ${RESET}" PROXY_USERNAME
+	@read -p "${YELLOW}Password for proxy: ${RESET}" PROXY_PASSWD
+
+	@printf "${LINE_RETURN}"
+
+	if [[ $$(dpkg-query -s apache2-utils 2>/dev/null >/dev/null) -ne 0 ]]; \
+    then \
+      printf "${YELLOW}apache2-utils required for this feature, installing it.${RESET}${LINE_RETURN}"; \
+      sudo apt install -y apache2-utils; \
+      printf "${LINE_RETURN}"; \
+    fi
+
+	DASHBOARD_AUTH=$$(htpasswd -nbB $$PROXY_USERNAME $$PROXY_PASSWD)
+
+	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_BREAK}"
+	@printf "Put it in the PROXY_CREDENTIALS configuration in the .env file${LINE_RETURN}"
+
+

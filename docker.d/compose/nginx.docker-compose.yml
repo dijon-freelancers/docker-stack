@@ -20,7 +20,7 @@ services:
       - $PWD/etc/nginx/vhosts.conf.template:/etc/nginx/conf.d/vhosts.conf.template:ro
       - ${SOURCE_PATH}:/var/www/project:ro
     ports:
-      - 80:80
+      - 8080:80
     networks:
       - backend
       - public-net

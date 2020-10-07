@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  traefik:
+    build:
+      context: ../..
+      dockerfile: ./docker.d/dockerfiles/traefik.Dockerfile
+    container_name: $COMPOSE_PROJECT_NAME-traefik
+    restart: always
+    command:
+      # DASHBOARD CONFIGURATION
+      - "--api=true"
+      - "--api.dashboard=true"
+      # DOCKER INTEGRATION
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # BASIC CONFIGURATION
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # LETSENCRYPT CONFIGURATION
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=$SSL_CERT_EMAIL"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "$PWD/run/letsencrypt:/letsencrypt"
+    labels:
+      # enabling the service
+      - "traefik.enable=true"
+      # setting docker listener
+      - "traefik.docker.network=default"
+      # setting up the dashboard router
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.$DOMAIN`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=$PROXY_CREDENTIALS"
+    networks:
+      - backend
+      - public-net
+    depends_on:
+      - nginx
