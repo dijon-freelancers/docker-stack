@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  nginx:
+    build:
+      context: ../..
+      dockerfile: ./docker.d/dockerfiles/nginx.Dockerfile
+    container_name: $COMPOSE_PROJECT_NAME-nginx
+    restart: always
+    environment:
+      - DOLLAR=$$
+      - TZ=${TIMEZONE}
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=4096
+      - NGINX_GZIP=off
+      - DOCUMENT_ROOT=/var/www/project/public
+      - PHP_CONTAINER=${COMPOSE_PROJECT_NAME}-php
+    volumes:
+      - $PWD/etc/nginx/nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+      - $PWD/etc/nginx/vhosts.conf.template:/etc/nginx/conf.d/vhosts.conf.template:ro
+      - ${SOURCE_PATH}:/var/www/project:ro
+    ports:
+      - 80:80
+    networks:
+      - backend
+      - public-net
+    depends_on:
+      - php
