@@ -20,7 +20,7 @@ services:
       - $PWD/etc/nginx/vhosts.conf.template:/etc/nginx/conf.d/vhosts.conf.template:ro
       - $SOURCE_PATH:/var/www/project:ro
     ports:
-      - 8001:80
+      - 8001:8001
     networks:
       - proxy-bridge
       - backend-bridge
@@ -31,4 +31,4 @@ services:
       - "traefik.docker.network=proxy-bridge"
       - "traefik.http.routers.$COMPOSE_PROJECT_NAME.rule=Host(`$DOMAIN`)"
       - "traefik.http.routers.$COMPOSE_PROJECT_NAME.entrypoints=web"
-      - "traefik.http.services.$COMPOSE_PROJECT_NAME.loadbalancer.server.port=80"
+      - "traefik.http.services.$COMPOSE_PROJECT_NAME.loadbalancer.server.port=8001"
