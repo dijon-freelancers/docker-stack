@@ -1,7 +1,7 @@
 version: "3.8"
 
 networks:
-  public-net:
+  backend-bridge:
 
-  backend:
-    internal: true
+  proxy-bridge:
+    external: true
