@@ -31,7 +31,7 @@ services:
       # enabling the service
       - "traefik.enable=true"
       # setting docker listener
-      - "traefik.docker.network=default"
+      - "traefik.docker.network=proxy-bridge"
       # setting up the dashboard router
       - "traefik.http.routers.dashboard.rule=Host(`traefik.$DOMAIN`)"
       - "traefik.http.routers.dashboard.service=api@internal"
@@ -40,7 +40,4 @@ services:
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=$PROXY_CREDENTIALS"
     networks:
-      - backend
-      - public-net
-    depends_on:
-      - nginx
+      - proxy-bridge
