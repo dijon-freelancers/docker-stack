@@ -15,7 +15,6 @@ services:
     volumes:
       - $SOURCE_PATH:/var/www/project
     networks:
-      - backend
-      - public-net
+      - backend-bridge
     depends_on:
       - mysql
