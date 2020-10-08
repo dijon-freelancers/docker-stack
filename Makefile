@@ -48,10 +48,13 @@ install: ## installs the project and launch it
 
 	@printf "Generating root secret..."
 	@openssl rand -base64 12 > ./docker.d/secrets/mysql/db_root_password
-	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_BREAK}"
+	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_RETURN}"
 
-	@printf "Generating network..."
-	@docker network create -d bridge proxy-bridge
+	@printf "${GREEN}Generating docker prerequisites...${RESET}${LINE_BREAK}"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}"
+
+	@printf "Generating proxy-bridge network..."
+	@docker network create -d bridge proxy-bridge 2&>1 > /dev/null
 	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_BREAK}"
 
 	@printf ${LINE_BREAK}
