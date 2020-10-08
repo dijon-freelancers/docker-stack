@@ -25,10 +25,17 @@ endif
 
 copy_env: ## copy the .env file template to the root folder
 	@printf ${LINE_BREAK}
-	@printf "Copying env file..."
+	@printf "Copying env file for development..."
 	@cp env.d/.env .env
 	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_RETURN}"
 	@printf "You should now start to fill the .env file, and run 'make install' when ready.${LINE_RETURN}"
+
+copy_env_prod: ## copy the .env file template to the root folder
+	@printf ${LINE_BREAK}
+	@printf "Copying env file for production..."
+	@cp env.d/.env.prod .env
+	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_RETURN}"
+	@printf "You should now start to fill the .env file for PRODUCTION environment, and run 'make install' when ready.${LINE_RETURN}"
 
 install: ## installs the project and launch it
 	@printf ${LINE_BREAK}
@@ -120,7 +127,7 @@ create_proxy_credentials: ## creates the Traefik proxy credentials to put in the
 
 	DASHBOARD_AUTH=$$(htpasswd -nbB $$PROXY_USERNAME $$PROXY_PASSWD)
 
-	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_BREAK}"
+	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_RETURN}"
 	@printf "Put it in the PROXY_CREDENTIALS configuration in the .env file${LINE_RETURN}"
 
 
