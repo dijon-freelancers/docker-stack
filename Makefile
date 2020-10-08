@@ -42,7 +42,9 @@ install: ## installs the project and launch it
 
 	@if [ -f "./docker.d/secrets/mysql/db_root_password" ]; then \
 	printf "${RED}${COMPOSE_PROJECT_NAME} is already installed ! ${LINE_BREAK}you should not use 'make install' once installed.${RESET}${LINE_RETURN}"; \
-	printf "If you still want to re-install the project, make sure to backup your database and delete the run/mysql folder.${LINE_RETURN}"; \
+	printf "If you still want to re-install the project, make sure to backup your database and run :${LINE_BREAK}"; \
+	printf "make docker_down && sudo rm -rf run/* && sudo rm -rf docker.d/secrets/mysql${LINE_RETURN}"; \
+	printf "${YELLOW}This will delete your database, so double check that you have backuped it !!!${LINE_RETURN}"; \
 	exit; \
 	fi;
 
@@ -61,7 +63,7 @@ install: ## installs the project and launch it
 	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}"
 
 	@printf "Generating proxy-bridge network..."
-	@docker network create -d bridge proxy-bridge 2&>1 > /dev/null
+	@docker network create -d bridge proxy-bridge > /dev/null 2>&1
 	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_BREAK}"
 
 	@printf ${LINE_BREAK}
@@ -129,5 +131,3 @@ create_proxy_credentials: ## creates the Traefik proxy credentials to put in the
 
 	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_RETURN}"
 	@printf "Put it in the PROXY_CREDENTIALS configuration in the .env file${LINE_RETURN}"
-
-

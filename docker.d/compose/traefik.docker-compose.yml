@@ -22,10 +22,10 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.email=$SSL_CERT_EMAIL"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - "$PWD/run/letsencrypt:/letsencrypt"
     labels:
       # enabling the service
