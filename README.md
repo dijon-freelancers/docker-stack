@@ -15,6 +15,18 @@ environment.
 * A directory with your symfony project.
 * GNU make installed.
 
+## What will be deployed
+* PHP 7-fpm
+* MySQL 8.0
+* NginX latest
+* Traefik latest
+    * with Traefik dashboard enabled. *(You can access it with `https://traefik.DOMAIN`)*
+    * with automated SSL certification and enforcement on production environments
+    * with simple HTTP for development environments.
+* Node lts
+    * only for development environment
+    * with automated yarn installation and yarn dev server
+
 ## Installation
 You can clone and initialize the project with :
 ```bash
@@ -52,7 +64,13 @@ Now, you can launch the installation of the project :
 make install
 ```
 
-Now, your stack should be up and running. You can test it by using the domain you provided in the `.env` file with a web browser.
+This will :
+* Create MySQL root password secret.
+* Create docker `proxy-bridge` public network.
+* Build docker containers.
+* Launch the containers.
+
+Now, your stack should be up and running. You can test it by using the `DOMAIN` you provided in the `.env` file with a web browser.
 
 > **Note** : You will have to wait 15-20 seconds before connecting to MySQL due to system database intialization.
 
