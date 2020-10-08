@@ -36,7 +36,6 @@ This will prepare for you an empty `.env` file.
 
 Open the `.env` file and complete the parameters. Here is a complete list of environment parameters :
 
-|-----------|-------------|
 | Parameter | Description |
 |-----------|-------------|
 | `COMPOSE_FILE` | The list of docker compose file to build and use. **You should not modify this unless you know exactly what you do** |
