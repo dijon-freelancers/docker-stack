@@ -13,7 +13,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     volumes:
-      - $PWD/run/mysql/data:/var/lib/mysql
+      - "$PWD/run/mysql/data:/var/lib/mysql"
     environment:
       TZ: $TIMEZONE
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
