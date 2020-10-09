@@ -99,6 +99,22 @@ make install
 ```
 If the project is already installed, it will dipslay information about project reset.
 
+## Commands
+This repository is built on top of [XSlender/Makefile-utils](https://github.com/XSlender/makefile-utils) that provides Makefiles utilities.  
+You can go on it to get a full list of provided commands.
+
+Here is the list of commands for this repository :
+
+| Command | Description |
+|---------|-------------|
+| `copy_env`                      | copy the .env file template to the root folder. |
+| `copy_env_prod`                 | copy the .env file template to the root folder for production environment. |
+| `install`                       | installs the project and launch it. |
+| `mysql_connect`                 | connects you to the database with the user given (it requires a secret file). |
+| `mysql_create_app_user`         | creates an applicative user. |
+| `create_proxy_credentials`      | creates the Traefik proxy credentials to put in the .env file. |
+
 ## To-do
 * Deploy automated rules for main firewalls (ufw, iptables)
 * Deploy VPN to connect to the database other than with console.
+* Automated database backups.
