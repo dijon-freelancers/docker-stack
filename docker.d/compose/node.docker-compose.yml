@@ -11,7 +11,7 @@ services:
     restart: always
     volumes:
       - $SOURCE_PATH:/var/www/project
-    command: ["yarn", "dev-server", "--host=0.0.0.0"]
+    command: ["yarn", "dev-server"]
     networks:
       - backend-bridge
     depends_on:
