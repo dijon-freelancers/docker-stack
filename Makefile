@@ -131,3 +131,27 @@ create_proxy_credentials: ## creates the Traefik proxy credentials to put in the
 
 	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_RETURN}"
 	@printf "Put it in the PROXY_CREDENTIALS configuration in the .env file${LINE_RETURN}"
+
+yarn_force_install:
+	@printf "${YELLOW}Forcing webpack installation...${RESET}\n"
+	@printf "${YELLOW}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
+
+	@docker run --rm -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn add @symfony/webpack-encore
+
+	@printf ${LINE_BREAK}
+
+	@printf "${YELLOW}Forcing yarn installation...${RESET}\n"
+	@printf "${YELLOW}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
+	@docker run --rm -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn install
+
+	@printf ${LINE_BREAK}
+
+	@${MAKE} --no-print-directory docker_down
+	@${MAKE} --no-print-directory docker_launch
+
+yarn_build:
+	@printf "${GREEN}Building javascripts...${RESET}\n"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
+
+	@docker run --rm -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn build
+	@printf ${LINE_BREAK}
