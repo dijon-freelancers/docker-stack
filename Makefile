@@ -149,9 +149,9 @@ yarn_force_install:
 	@${MAKE} --no-print-directory docker_down
 	@${MAKE} --no-print-directory docker_launch
 
-yarn_build:
+yarn_build_production:
 	@printf "${GREEN}Building javascripts...${RESET}\n"
 	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
 
-	@docker run --rm -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn build
+	@docker run --rm -ti -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn encore production
 	@printf ${LINE_BREAK}
