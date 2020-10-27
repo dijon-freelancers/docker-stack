@@ -92,7 +92,7 @@ install: ## installs the project and launch it
 	@printf "${LINE_BREAK}"
 
 	@printf "${YELLOW}If you are in a production environment, you may want to use 'make deploy' to do a proper production deployment.${RESET}${LINE_BREAK}"
-	@printf "${YELLOW}Additionally, you will want to run 'make yarn_force_install' before deploying if you handle webpack-encore in your project.${RESET}${LINE_RETURN}"
+	@printf "${YELLOW}Additionally, you will want to run 'make yarn_force_install' before deploying or developing if you handle webpack-encore in your project. Without this, the 'yarn watch --dev' contained in the node container and yarn building while deploying this stack will not work${RESET}${LINE_RETURN}"
 
 up: ## shorthand to launch the project
 	@${MAKE} --no-print-directory docker_launch
