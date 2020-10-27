@@ -30,12 +30,31 @@ copy_env: ## copy the .env file template to the root folder
 	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_RETURN}"
 	@printf "You should now start to fill the .env file, and run 'make install' when ready.${LINE_RETURN}"
 
-copy_env_prod: ## copy the .env file template to the root folder
-	@printf ${LINE_BREAK}
-	@printf "Copying env file for production..."
-	@cp env.d/.env.prod .env
-	@printf "\t${GREEN}${CHECK_MARK}${RESET}${LINE_RETURN}"
-	@printf "You should now start to fill the .env file for PRODUCTION environment, and run 'make install' when ready.${LINE_RETURN}"
+.ONESHELL:
+create_proxy_credentials: ## creates the Traefik proxy credentials to put in the .env file
+	@printf "${GREEN}Proxy credentials creation...${RESET}\n"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
+
+	@PROXY_USERNAME=""
+	@PROXY_PASSWD=""
+	@DASHBOARD_AUTH=""
+
+	@read -p "${YELLOW}Username for proxy: ${RESET}" PROXY_USERNAME
+	@read -p "${YELLOW}Password for proxy: ${RESET}" PROXY_PASSWD
+
+	@printf "${LINE_RETURN}"
+
+	if [[ $$(dpkg-query -s apache2-utils 2>/dev/null >/dev/null) -ne 0 ]]; \
+    then \
+      printf "${YELLOW}apache2-utils required for this feature, installing it.${RESET}${LINE_RETURN}"; \
+      sudo apt install -y apache2-utils; \
+      printf "${LINE_RETURN}"; \
+    fi
+
+	DASHBOARD_AUTH=$$(htpasswd -nbB $$PROXY_USERNAME $$PROXY_PASSWD)
+
+	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_RETURN}"
+	@printf "Put it in the PROXY_CREDENTIALS configuration in the .env file${LINE_RETURN}"
 
 install: ## installs the project and launch it
 	@printf ${LINE_BREAK}
@@ -68,8 +87,38 @@ install: ## installs the project and launch it
 
 	@printf ${LINE_BREAK}
 
+	@${MAKE} --no-print-directory docker_update
+
+	@printf "${LINE_BREAK}"
+
+	@printf "${BLUE}Note : if you haven't installed your symfony vendors yet, you can use docker exec -ti ${COMPOSE_PROJECT_NAME}-php bash -c 'composer install' to do it.${RESET}${LINE_BREAK}"
+
+	@printf "${LINE_BREAK}"
+
+	@printf "${YELLOW}If you are in a production environment, you may want to use 'make deploy' to do a proper production deployment.${RESET}${LINE_BREAK}"
+	@printf "${YELLOW}Additionally, you will want to run 'make yarn_force_install' before deploying or developing if you handle webpack-encore in your project. Without this, the 'yarn watch --dev' contained in the node container and yarn building while deploying this stack will not work${RESET}${LINE_RETURN}"
+
+up: ## shorthand to launch the project
 	@${MAKE} --no-print-directory docker_launch
 
+down: ## shorthand to stop the project
+	@${MAKE} --no-print-directory docker_down
+
+deploy: ## deploys the stack for production environment
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}"
+	@printf "${GREEN}Deployment...${RESET}\n"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_RETURN}"
+	@${MAKE} --no-print-directory down
+	@printf "${LINE_BREAK}"
+	@${MAKE} --no-print-directory yarn_build
+	@printf "${LINE_BREAK}"
+	@${MAKE} --no-print-directory up
+	@docker-compose stop node
+	@printf "${LINE_BREAK}"
+	@printf "${GREEN}Deployment done !${RESET}${LINE_RETURN}"
+	@printf " - docker stack restarted${LINE_BREAK}"
+	@printf " - yarn build executed${LINE_BREAK}"
+	@printf " - yarn watcher stopped${LINE_BREAK}"
 	@printf "${LINE_BREAK}"
 
 mysql_connect: ## connects you to the database with the user given (it requires a secret file)
@@ -106,52 +155,19 @@ mysql_create_app_user: ## creates an applicative user
 	@printf "Username: $$APP_USER_NAME${LINE_BREAK}"
 	@printf "Password: $$(cat ./docker.d/secrets/mysql/db_$${APP_USER_NAME}_password)${LINE_RETURN}"
 
-up: ## shorthand to launch the project
-	@${MAKE} --no-print-directory docker_launch
-
-down: ## shorthand to stop the project
-	@${MAKE} --no-print-directory docker_down
-
-.ONESHELL:
-create_proxy_credentials: ## creates the Traefik proxy credentials to put in the .env file
-	@printf "${GREEN}Proxy credentials creation...${RESET}\n"
-	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
-
-	@PROXY_USERNAME=""
-	@PROXY_PASSWD=""
-	@DASHBOARD_AUTH=""
-
-	@read -p "${YELLOW}Username for proxy: ${RESET}" PROXY_USERNAME
-	@read -p "${YELLOW}Password for proxy: ${RESET}" PROXY_PASSWD
-
-	@printf "${LINE_RETURN}"
-
-	if [[ $$(dpkg-query -s apache2-utils 2>/dev/null >/dev/null) -ne 0 ]]; \
-    then \
-      printf "${YELLOW}apache2-utils required for this feature, installing it.${RESET}${LINE_RETURN}"; \
-      sudo apt install -y apache2-utils; \
-      printf "${LINE_RETURN}"; \
-    fi
-
-	DASHBOARD_AUTH=$$(htpasswd -nbB $$PROXY_USERNAME $$PROXY_PASSWD)
-
-	@printf "${GREEN}${CHECK_MARK} Your proxy secret is :${RESET} $$DASHBOARD_AUTH ${LINE_RETURN}"
-	@printf "Put it in the PROXY_CREDENTIALS configuration in the .env file${LINE_RETURN}"
-
-yarn_force_install:
+yarn_force_install: ## forces the installation for webpack encore
 	@printf "${YELLOW}Forcing webpack installation...${RESET}\n"
 	@printf "${YELLOW}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
 
-	@docker run --rm -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn add @symfony/webpack-encore
+	@docker-compose stop node
+	@docker run --rm -v ${SOURCE_PATH}:/var/www/project ${COMPOSE_PROJECT_NAME}_node bash -c 'yarn init'
+	@docker run --rm -v ${SOURCE_PATH}:/var/www/project ${COMPOSE_PROJECT_NAME}_node bash -c 'yarn add --dev @symfony/webpack-encore'
+	@docker run --rm -v ${SOURCE_PATH}:/var/www/project ${COMPOSE_PROJECT_NAME}_node bash -c 'yarn install'
+	@docker-compose up -d node
 
-	@printf ${LINE_BREAK}
+yarn_build: ## builds the assets for webpack production
+	@printf "${GREEN}Building for production...${RESET}${LINE_BREAK}"
+	@printf "${GREEN}${DOTTED_LINE}${RESET}${LINE_RETURN}"
+	@docker run --rm -v ${SOURCE_PATH}:/var/www/project ${COMPOSE_PROJECT_NAME}_node bash -c 'yarn encore production'
 
-	@printf "${YELLOW}Forcing yarn installation...${RESET}\n"
-	@printf "${YELLOW}${DOTTED_LINE}${RESET}${LINE_BREAK}\n"
-	@docker run --rm -v $$SOURCE_PATH:/var/www/project ${COMPOSE_PROJECT_NAME}_node yarn install
-
-	@printf ${LINE_BREAK}
-
-	@${MAKE} --no-print-directory docker_down
-	@${MAKE} --no-print-directory docker_launch
 
