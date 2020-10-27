@@ -91,6 +91,10 @@ install: ## installs the project and launch it
 
 	@printf "${LINE_BREAK}"
 
+	@printf "${BLUE}Note : if you haven't installed your symfony vendors yet, you can use docker exec -ti ${COMPOSE_PROJECT_NAME}-php bash -c 'composer install' to do it.${RESET}${LINE_BREAK}"
+
+	@printf "${LINE_BREAK}"
+
 	@printf "${YELLOW}If you are in a production environment, you may want to use 'make deploy' to do a proper production deployment.${RESET}${LINE_BREAK}"
 	@printf "${YELLOW}Additionally, you will want to run 'make yarn_force_install' before deploying or developing if you handle webpack-encore in your project. Without this, the 'yarn watch --dev' contained in the node container and yarn building while deploying this stack will not work${RESET}${LINE_RETURN}"
 
