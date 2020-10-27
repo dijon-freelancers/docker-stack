@@ -65,7 +65,7 @@ RUN chmod 644 /usr/local/etc/php-fpm.d/www.conf
 
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-	&& php composer-setup.php \
+	&& php composer-setup.php --version=1.10.16 \
 	&& mv composer.phar /bin/composer \
 	&& php -r "unlink('composer-setup.php');"
 

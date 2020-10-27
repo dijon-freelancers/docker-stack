@@ -106,6 +106,12 @@ mysql_create_app_user: ## creates an applicative user
 	@printf "Username: $$APP_USER_NAME${LINE_BREAK}"
 	@printf "Password: $$(cat ./docker.d/secrets/mysql/db_$${APP_USER_NAME}_password)${LINE_RETURN}"
 
+up: ## shorthand to launch the project
+	@${MAKE} --no-print-directory docker_launch
+
+down: ## shorthand to stop the project
+	@${MAKE} --no-print-directory docker_down
+
 .ONESHELL:
 create_proxy_credentials: ## creates the Traefik proxy credentials to put in the .env file
 	@printf "${GREEN}Proxy credentials creation...${RESET}\n"
