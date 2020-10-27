@@ -14,5 +14,3 @@ services:
     command: yarn encore dev --watch
     networks:
       - backend-bridge
-    depends_on:
-      - php
