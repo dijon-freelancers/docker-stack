@@ -63,7 +63,6 @@ RUN chmod 644 /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 COPY etc/php/www.conf /usr/local/etc/php-fpm.d/
 RUN chmod 644 /usr/local/etc/php-fpm.d/www.conf
 
-
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& php composer-setup.php --version=1.10.16 \
 	&& mv composer.phar /bin/composer \
@@ -77,6 +76,9 @@ RUN rm -f /etc/localtime \
 	&& ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
 RUN ln -s /usr/local/bin/php /bin/php
+
+RUN apt-get update && apt-get install -y jpegoptim optipng gifsicle webp npm pngquant
+RUN npm install -g svgo
 
 ARG PROJECT_SOURCE_DIR
 WORKDIR $PROJECT_SOURCE_DIR
